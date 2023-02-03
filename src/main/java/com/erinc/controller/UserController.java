@@ -4,6 +4,7 @@ import com.erinc.repository.criteriaquery.UserRepository;
 import com.erinc.repository.entity.*;
 import com.erinc.repository.hql.UserDao;
 import com.erinc.utility.HibernateUtils;
+import net.bytebuddy.asm.Advice;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -43,7 +44,24 @@ public class UserController {
         //userDao.findByUserStartWithValueAndPostCound().forEach(x-> System.out.println(x.getName()+" - "+x.getPostCount()));
         //System.out.println(userRepository.sumPost());
         //System.out.println(userDao.sumPost());
-        System.out.println(userRepository.minPost());
+        //System.out.println(userRepository.minPost());
+        //userRepository.manyColumns();
+        /*userRepository.getUsernameGenderPostCount2().forEach(x->{
+            System.out.println("username= "+x.get(0));
+            System.out.println("gender= "+x.get(1));
+            System.out.println("postCount= "+x.get(2));
+        });*/
+        /*userRepository.genderCount().forEach(x->{
+            Arrays.asList(x).forEach(y-> System.out.print(y+"-"));
+            System.out.println();
+        });*/
+        userDao.genderCount().forEach(x->{
+            for (Object o: x.toArray()){
+                System.out.println(o);
+            }
+        });
+
+
 
 
 

@@ -6,6 +6,7 @@ import com.erinc.repository.entity.ICrud;
 import com.erinc.utility.HibernateUtils;
 import org.hibernate.Session;
 
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
@@ -102,9 +103,16 @@ public class UserDao implements ICrud<User> {
         typedQuery.setParameter("x","M%");
         typedQuery.setParameter("number",6);
         return typedQuery.getResultList();
-
     }
 
+    public List<Tuple> genderCount(){
+        String hql = "select gender, count(*) from User as u group by gender";
+        Session session = HibernateUtils.getSessionFactory().openSession();
+        TypedQuery<Tuple> typedQuery = session.createQuery(hql, Tuple.class);
+        return typedQuery.getResultList();
+
+
+    }
 
 
 }

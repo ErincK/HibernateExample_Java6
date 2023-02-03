@@ -4,20 +4,18 @@ package com.erinc.repository.criteriaquery;
 
  */
 
+import com.erinc.repository.entity.EGender;
 import com.erinc.repository.entity.ICrud;
 import com.erinc.repository.entity.Name;
 import com.erinc.repository.entity.User;
 import com.erinc.utility.HibernateUtils;
-import org.hibernate.Criteria;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.*;
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Queue;
+
 /*
 
 1-find all
@@ -29,6 +27,9 @@ import java.util.Queue;
 7-Toplam post sayısı.
 8-en az post atan kullanıcı,
 9-en çok post atan kullanıcı.
+10- kullanıcıların username, gender ve postCountlarını dönelim.
+11- erkak kullanıcı ve kadın kullanıcı sayılarını bulalım.
+12- postCoun'u 7 üzerinde olan kullanıcı sayısı
  */
 public class UserRepository implements ICrud<User> {
     private EntityManager entityManager;
@@ -135,6 +136,55 @@ public class UserRepository implements ICrud<User> {
         criteria.select(root).orderBy(criteriaBuilder.desc(root.get("postCount")));
         return entityManager.createQuery(criteria).getResultList().get(0);
     }
+//kullanıcıların username, gender ve postCountlarını dönelim.
+    public void manyColumns(){
+        CriteriaQuery<Object[]> criteria = criteriaBuilder.createQuery(Object[].class);
+        Root<User> root = criteria.from(User.class);
+
+        Path<String> userNamePath = root.get("username");
+        Path<EGender> genderPath = root.get("gender");
+        Path<Integer> postCountPath = root.get("postCount");
+
+        criteria.select(criteriaBuilder.array(userNamePath,genderPath,postCountPath));
+
+        List<Object[]> manyList = entityManager.createQuery(criteria).getResultList();
+        manyList.forEach(x->{
+            for (Object o:x) {
+                System.out.printf("Veriler.....: " + o.toString());
+            }
+            System.out.println();
+        });
+    }
+
+    public List<Object[]> getUsernameGenderPostCount(){
+        CriteriaQuery<Object[]> criteria= criteriaBuilder.createQuery(Object[].class);
+        Root<User> root= criteria.from(User.class);
+        criteria.multiselect(root.get("username"),root.get("gender"),root.get("postCount"));
+        return  entityManager.createQuery(criteria).getResultList();
+    }
+
+    public List<Tuple> getUsernameGenderPostCount2(){
+        CriteriaQuery<Tuple> criteria= criteriaBuilder.createQuery(Tuple.class);
+        Root<User> root= criteria.from(User.class);
+        Path<String> username=root.get("username");
+        Path<String> gender=root.get("gender");
+        Path<Integer> postCount=root.get("postCount");
+        criteria.multiselect(username,gender,postCount);
+        return  entityManager.createQuery(criteria).getResultList();
+    }
+
+    public List<Object[]> genderCount(){
+        CriteriaQuery<Object[]> criteria = criteriaBuilder.createQuery(Object[].class);
+        Root<User> root = criteria.from(User.class);
+        criteria.multiselect(root.get("gender"),criteriaBuilder.count(root)).groupBy(root.get("gender"));
+        return entityManager.createQuery(criteria).getResultList();
+    }
+
+
+
+
+
+
 
 
 }

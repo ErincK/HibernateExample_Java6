@@ -1,6 +1,9 @@
 package com.erinc.controller;
 
+import com.erinc.repository.criteriaquery.PostRepository;
+import com.erinc.repository.criteriaquery.UserRepository;
 import com.erinc.repository.entity.Post;
+import com.erinc.repository.hql.UserDao;
 import com.erinc.utility.HibernateUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -11,6 +14,16 @@ import java.util.Date;
 public class PostController {
 
     public static void main(String[] args) {
+       // createPost();
+        UserDao userDao=new UserDao();
+        PostRepository postRepository=new PostRepository();
+        //postRepository.howManyPost();
+        postRepository.userPostCountGt3();
+
+
+    }
+
+    private static void createPost() {
         Session session= HibernateUtils.getSessionFactory().openSession();
         Transaction transaction= session.beginTransaction();
         Post post= Post.builder().content("içerik1").userId(1L).build();
@@ -39,6 +52,5 @@ public class PostController {
         session.save(post12);
         transaction.commit();
         session.close();
-
     }
 }
